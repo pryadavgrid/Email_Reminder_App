@@ -1,13 +1,17 @@
+Here is your **UPDATED README.md** according to your new structure + manual running (no scheduler) 👍
+
+---
+
 # ⏰ Python Reminder System
 
-A simple **Python-based Reminder System** that allows users to create reminders using a **desktop GUI application**, store them through a **Flask API**, and automatically send **email notifications** when the reminder date arrives.
+A simple **Python-based Reminder System** that allows users to create reminders using a **desktop GUI application**, store them through a **Flask API**, and send **email notifications manually** when needed.
 
-This project demonstrates a **complete workflow** involving:
+This project demonstrates:
 
 * Desktop GUI (PyQt6)
 * REST API (Flask)
 * CSV file storage
-* Automated email reminders
+* Manual email reminder execution
 
 ---
 
@@ -19,10 +23,10 @@ The system consists of three main components:
    Used by the user to create reminders.
 
 2. **Flask API Server**
-   Receives reminder data and stores it in a CSV file.
+   Receives reminder data and stores it.
 
-3. **Reminder Email Script**
-   Reads reminders and sends email notifications on the scheduled date.
+3. **Reminder Service (Manual Run)**
+   Sends email reminders when you run it manually.
 
 ---
 
@@ -31,111 +35,92 @@ The system consists of three main components:
 ```
 reminder-project/
 │
-├── gui.py                    # PyQt6 GUI application
-├── flask_app.py              # Flask API server
-├── send_reminders.py         # Email reminder processor
+├── app/
+│   ├── controllers/
+│   │   └── reminder_controller.py   # API routes
+│   │
+│   ├── services/
+│   │   ├── reminder_service.py      # Email logic
+│   │   └── gui_service.py           # PyQt6 GUI
+│   │
+│   ├── utils/
+│   │   └── file_handler.py          # CSV handling
+│   │
+│   └── main.py                      # Flask app init
 │
-├── reminders.csv             # Reminder storage file
-├── .env                      # Email credentials
-│
-└── README.md                 # Project documentation
+├── config.py                        # Environment config
+├── run.py                           # Start Flask server
+├── .env                             # Email credentials
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
 # ⚙️ System Workflow
 
-The reminder system works in the following steps:
-
 ```
-User (GUI Application)
-        │
-        ▼
+User (GUI)
+   │
+   ▼
 Submit Reminder
-        │
-        ▼
-Flask API Server
-        │
-        ▼
-Save Data → reminders.csv
-        │
-        ▼
-Email Reminder Script
-        │
-        ▼
-Check Today's Date
-        │
-        ▼
-Send Email Notification
+   │
+   ▼
+Flask API (Controller)
+   │
+   ▼
+Service Layer
+   │
+   ▼
+CSV File (Storage)
+   │
+   ▼
+Manual Script Run
+   │
+   ▼
+Send Email
 ```
 
 ---
 
-# 🖥 File 1 – GUI Application (reminder_gui.py)
+# 🖥 GUI Application (`gui_service.py`)
 
 ## Purpose
 
-This file creates a **desktop interface** where users can add reminders.
-
-## Technologies Used
-
-* PyQt6
-* requests library
+Provides a **desktop interface** for users.
 
 ## Features
 
-The GUI allows users to:
+* Select date & time
+* Enter email
+* Enter message
+* Set repeat interval
 
-* Select **date and time**
-* Enter **email address**
-* Enter **reminder message**
-* Set **repeat interval**
-
-Example repeat intervals:
+Example:
 
 ```
-1d → every 1 day
-2w → every 2 weeks
-3m → every 3 months
+1d → daily
+2w → weekly
+3m → monthly
 ```
 
-## Workflow
+## Flow
 
 ```
-User enters reminder details
-        │
-        ▼
-Click "Add Reminder"
-        │
-        ▼
-Data converted to JSON
-        │
-        ▼
-HTTP POST request sent to Flask API
+User input → JSON → POST request → Flask API
 ```
 
 ---
 
-# 🌐 File 2 – Flask API Server (falsk_app.py)
+# 🌐 Flask API (`reminder_controller.py`)
 
-## Purpose
-
-This file acts as the **backend server** for the application.
-
-It receives reminder data from the GUI and stores it in a **CSV file**.
-
-## Technologies Used
-
-* Flask
-* CSV module
-
-## API Endpoint
+## Endpoint
 
 ```
 POST /add
 ```
 
-### Example Request
+## Example Request
 
 ```json
 {
@@ -147,18 +132,36 @@ POST /add
 }
 ```
 
-### Process
+## Process
 
-1. Receive request from GUI
-2. Validate required fields
-3. Save reminder to `reminders.csv`
-4. Return success response
+1. Validate data
+2. Call service layer
+3. Save to CSV
 
 ---
 
-# 📁 reminders.csv
+# ⚙️ Service Layer (`reminder_service.py`)
 
-The reminders are stored in a CSV file.
+## Responsibilities
+
+* Save reminders
+* Send emails
+* Handle repeat logic
+
+## Important
+
+👉 Email sending is **NOT automatic**
+👉 You must run it manually
+
+---
+
+# 📁 CSV Storage
+
+Handled by:
+
+```
+app/utils/file_handler.py
+```
 
 Example:
 
@@ -169,56 +172,28 @@ date,time,email,message,repeat_interval
 
 ---
 
-# 📧 File 3 – Email Reminder Script (send_reminders.py)
+# 📧 Email Reminder (Manual Execution)
 
-## Purpose
-
-This script reads the reminders and sends **email notifications** when the reminder date matches the current date.
-
-## Technologies Used
-
-* smtplib
-* email.message
-* dotenv
-* datetime
-* dateutil.relativedelta
-
-## Main Tasks
-
-1. Load reminders from CSV
-2. Check today's date
-3. Send email reminder
-4. Calculate next date for repeating reminders
-5. Update CSV file
-
----
-
-## Email Workflow
+## How it works
 
 ```
-Read reminders.csv
-        │
-        ▼
+Load reminders
+   │
+   ▼
 Check today's date
-        │
-        ▼
-If reminder date == today
-        │
-        ▼
-Send Email
-        │
-        ▼
-Calculate next reminder date (if repeat)
-        │
-        ▼
-Update CSV file
+   │
+   ▼
+Send email if matched
+   │
+   ▼
+Update next date (if repeat)
 ```
 
 ---
 
 # 🔐 Environment Variables
 
-Create a `.env` file for email credentials.
+Create `.env` file:
 
 ```
 EMAIL_ADDRESS=your_email@gmail.com
@@ -232,18 +207,18 @@ EMAIL_PASSWORD=your_app_password
 ## 1️⃣ Install Dependencies
 
 ```
-pip install pyqt6 flask python-dotenv python-dateutil requests
+pip install -r requirements.txt
 ```
 
 ---
 
-## 2️⃣ Start Flask Server
+## 2️⃣ Run Flask Server
 
 ```
-python falsk_app.py
+python run.py
 ```
 
-Server runs on:
+Runs at:
 
 ```
 http://127.0.0.1:5000
@@ -254,79 +229,65 @@ http://127.0.0.1:5000
 ## 3️⃣ Run GUI Application
 
 ```
-python reminder_gui.py
+python app/services/gui_service.py
 ```
 
 ---
 
-## 4️⃣ Run Email Reminder Script
+## 4️⃣ Run Email Sender (Manual)
 
 ```
-python send_reminders.py
+python -c "from app.services.reminder_service import send_reminders; send_reminders()"
 ```
 
-You can schedule this script using:
-
-* **Cron Job (Linux / Mac)**
-* **Task Scheduler (Windows)**
-
-to run daily.
+👉 This will send emails for today's reminders
 
 ---
 
 # 📊 Example Data Flow
 
-Example reminder:
+```
+User adds reminder
+   │
+   ▼
+Saved in CSV
+   │
+   ▼
+You run email script manually
+   │
+   ▼
+Email sent
+   │
+   ▼
+Next date updated
+```
 
-```
-Date: 2026-03-20
-Time: 18:00
-Email: user@example.com
-Message: Doctor appointment
-Repeat Interval: 1d
-```
-
-Process:
-
-```
-User adds reminder in GUI
-        │
-        ▼
-Reminder saved in CSV
-        │
-        ▼
-Email script runs
-        │
-        ▼
-Email sent on scheduled date
-        │
-        ▼
-Next reminder date calculated
-```
 ---
 
-# PyQt6 
+# 🧠 PyQt6 Quick Reference
+
 ```
 PyQt6
  │
- ├── QApplication (This is the main controller of the GUI application.)  → runs the app
- ├── QWidget        → window
- ├── QLabel         → text
- ├── QLineEdit      → single text input
- ├── QTextEdit      → multi text input
- ├── QPushButton    → button
- ├── QMessageBox    → popup message
+ ├── QApplication → run app
+ ├── QWidget → window
+ ├── QLabel → text
+ ├── QLineEdit → input
+ ├── QTextEdit → multi input
+ ├── QPushButton → button
+ ├── QMessageBox → popup
  │
  ├── Layouts
- │     ├── QVBoxLayout → vertical layout
- │     └── QHBoxLayout → horizontal layout
+ │   ├── QVBoxLayout
+ │   └── QHBoxLayout
  │
  ├── Date & Time
- │     ├── QDateTime
- │     └── QDateTimeEdit
+ │   ├── QDateTime
+ │   └── QDateTimeEdit
  │
  └── Spacing
-       ├── QSpacerItem
-       └── QSizePolicy
-
+     ├── QSpacerItem
+     └── QSizePolicy
 ```
+
+---

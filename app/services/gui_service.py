@@ -99,9 +99,10 @@ class ReminderApp(QWidget):
                 }
 
         # Send POST request to API
+        API_URL = "http://127.0.0.1:5000/add"
         response = requests.post(
             # "http://realworldpython.pythonanywhere.com/add"
-            "http://127.0.0.1:5000/add",
+            API_URL,
             json=data)
         
         # If request successful
