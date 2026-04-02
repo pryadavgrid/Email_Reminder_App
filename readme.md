@@ -1,7 +1,3 @@
-Here is your **UPDATED README.md** according to your new structure + manual running (no scheduler) 👍
-
----
-
 # ⏰ Python Reminder System
 
 A simple **Python-based Reminder System** that allows users to create reminders using a **desktop GUI application**, store them through a **Flask API**, and send **email notifications manually** when needed.
