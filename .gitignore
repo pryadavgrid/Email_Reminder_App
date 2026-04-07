@@ -1,2 +1,29 @@
-# environment File
+# Virtual environment
+venv/
+.env/
+dsa_venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# IDE / Editor files
+.vscode/
+.idea/
+
+# macOS files
+.DS_Store
+
+# Logs
+*.log
+
+# Environment variables
 .env
+grid_python
+
+# python __pycache__ file
+__pycache__
+
+# TempCode
+TempCodeRunner
+tempCodeRunnerFile.py
